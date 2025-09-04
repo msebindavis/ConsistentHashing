@@ -288,8 +288,6 @@ public class ConsistentHashRingTest {
         System.out.printf("\nStandard Deviation: %.2f (Lower is better)\n", stdDev);
 
 
-
-
         // 6. Test: Benchmarking Performance
 System.out.println("\n6. Benchmarking Computation Time");
 
@@ -313,22 +311,41 @@ for (String key : benchmarkKeysList) {
 }
 long endGetNode = System.nanoTime();
 
-double getNodeTimeMs = (endGetNode - startGetNode) / 1_000_000.0;
-System.out.printf("Time to map %d keys using getNode: %.2f ms (%.2f µs/key)\n",
-        benchmarkKeys, getNodeTimeMs, (getNodeTimeMs * 1000) / benchmarkKeys);
+double getNodeTotalTimeMs = (endGetNode - startGetNode) / 1_000_000.0;
+double getNodeAvgMicroSec = ((endGetNode - startGetNode) / 1000.0) / benchmarkKeys;
+
+System.out.printf(
+        "Time to map %d keys using getNode: %.2f ms (%.4f µs/key)\n",
+        benchmarkKeys, getNodeTotalTimeMs, getNodeAvgMicroSec
+);
+
+// === Compute Time For Single getNode() ===
+String sampleKey = "sample-key";
+long singleStart = System.nanoTime();
+benchmarkRing.getNode(sampleKey);
+long singleEnd = System.nanoTime();
+double singleGetNodeTimeNs = singleEnd - singleStart;
+
+System.out.printf("Single getNode() computation time: %.2f ns (%.4f µs)\n",
+        singleGetNodeTimeNs, singleGetNodeTimeNs / 1000.0
+);
 
 // Benchmark addNode
 String newNode = "Node-New";
 long startAddNode = System.nanoTime();
 benchmarkRing.addNode(newNode);
 long endAddNode = System.nanoTime();
-System.out.printf("Time to add a single node: %.2f ms\n", (endAddNode - startAddNode) / 1_000_000.0);
+System.out.printf("Time to add a single node: %.2f ms\n",
+        (endAddNode - startAddNode) / 1_000_000.0
+);
 
 // Benchmark removeNode
 long startRemoveNode = System.nanoTime();
 benchmarkRing.removeNode(newNode);
 long endRemoveNode = System.nanoTime();
-System.out.printf("Time to remove a single node: %.2f ms\n", (endRemoveNode - startRemoveNode) / 1_000_000.0);
+System.out.printf("Time to remove a single node: %.2f ms\n",
+        (endRemoveNode - startRemoveNode) / 1_000_000.0
+);
 
 // Combined throughput test (multi-threaded)
 int threadCountBench = 8;
@@ -368,5 +385,7 @@ System.out.printf("Processed %d keys across %d threads in %.2f ms\n",
         benchmarkKeys, threadCountBench, totalTimeMs);
 System.out.printf("Throughput: %.2f keys/sec\n",
         (benchmarkKeys / (totalTimeMs / 1000.0)));
+
+
     }
 }
