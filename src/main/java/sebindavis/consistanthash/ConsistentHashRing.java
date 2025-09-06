@@ -1,76 +1,29 @@
 package main.java.sebindavis.consistanthash;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.concurrent.locks.Lock;
-
-public class ConsistentHashRing {
-
-    private final int numberOfReplicas;
-    private final SortedMap<Integer, String> circle = new TreeMap<>();
-    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-    private final Lock readLock = lock.readLock();
-    private final Lock writeLock = lock.writeLock();
-
-    public ConsistentHashRing(int numberOfReplicas) {
-        this.numberOfReplicas = numberOfReplicas;
-    }
-
-    public void addNode(String node) {
-        writeLock.lock();
-        try {
-            for (int i = 0; i < numberOfReplicas; i++) {
-                int hash = getHash(node + i);
-                circle.put(hash, node);
-            }
-            }
-        finally {
-                writeLock.unlock();
-            }
-    }
-
-    public  void removeNode(String node) {
-        writeLock.lock();
-         try {
-        for (int i = 0; i < numberOfReplicas; i++) {
-            int hash = getHash(node + i);
-            circle.remove(hash);
-        }
-        } finally {
-                writeLock.unlock();
-            }
-    }
-
-    public String getNode(String key) {
-        if (circle.isEmpty()) {
-            return null;
-        }
-        int hash = getHash(key);
-        readLock.lock();
-        try {
-            SortedMap<Integer, String> tailMap = circle.tailMap(hash);
-            hash = tailMap.isEmpty() ? circle.firstKey() : tailMap.firstKey();
-            return circle.get(hash);
-        } finally {
-            readLock.unlock();
-        }
-    }
-
-    private int getHash(String key) {
-    try {
-        MessageDigest md = MessageDigest.getInstance("MD5");
-        byte[] digest = md.digest(key.getBytes());
-        int h = ((digest[0] & 0xFF) << 24)
-              | ((digest[1] & 0xFF) << 16)
-              | ((digest[2] & 0xFF) << 8)
-              |  (digest[3] & 0xFF);
-        return h & 0x7fffffff; // keep it positive
-    } catch (NoSuchAlgorithmException e) {
-        throw new RuntimeException(e);
-    }
-}
-
+public interface ConsistentHashRing {
+    
+    /**
+     * Adds a node to the consistent hash ring
+     * @param node the node identifier to add
+     */
+    void addNode(String node);
+    
+    /**
+     * Removes a node from the consistent hash ring
+     * @param node the node identifier to remove
+     */
+    void removeNode(String node);
+    
+    /**
+     * Gets the node responsible for the given key
+     * @param key the key to look up
+     * @return the node identifier responsible for the key, or null if no nodes exist
+     */
+    String getNode(String key);
+    
+    /**
+     * Returns the number of virtual replicas per physical node
+     * @return the number of replicas
+     */
+    int numberOfReplicas();
 }
