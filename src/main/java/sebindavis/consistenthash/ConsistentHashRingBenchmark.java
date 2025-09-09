@@ -1,4 +1,4 @@
-package main.java.sebindavis.consistanthash;
+package sebindavis.consistenthash;
 
 import java.util.ArrayList;
 import java.util.HashMap;

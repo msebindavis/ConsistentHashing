@@ -1,0 +1,8 @@
+Phase	Goal
+Phase 1	Convert TreeMap → Sorted Array with Binary Search
+Phase 2	Add Virtual Nodes and Benchmark
+Phase 3	Implement Read-Copy-Update for Lock-Free Reads
+Phase 4	Add Failure Detection & Node Heartbeats
+Phase 5	Use ZooKeeper/etcd to Store the Ring
+Phase 6	Add Gossip Protocol for Auto Node Discovery
+Phase 7	Implement Jump Consistent Hashing as an Alternative

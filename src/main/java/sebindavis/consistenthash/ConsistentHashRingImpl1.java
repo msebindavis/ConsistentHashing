@@ -1,4 +1,4 @@
-package main.java.sebindavis.consistanthash;
+package sebindavis.consistenthash;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -23,6 +23,7 @@ public class ConsistentHashRingImpl1 implements ConsistentHashRing {
     public int numberOfReplicas()  {
         return numberOfReplicas;
     }
+
 
     @Override
     public void addNode(String node) {

@@ -1,9 +1,8 @@
-package main.java.sebindavis.consistanthash;
+package sebindavis.consistenthash;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +16,7 @@ public class ConsistentHashRingImpl2 implements ConsistentHashRing {
     private final List<Integer> hashOfServers = new ArrayList<>();
     private final Map<Integer, String> hashToNodeMap = new HashMap<>();
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-    private final Lock readLock = lock.readLock();
+    // private final Lock readLock = lock.readLock();
     private final Lock writeLock = lock.writeLock();
 
     public ConsistentHashRingImpl2(int numberOfReplicas) {
@@ -129,13 +128,13 @@ public class ConsistentHashRingImpl2 implements ConsistentHashRing {
             return null;
         }
         int hash = getHash(key);
-        readLock.lock();
+        // readLock.lock();
         try {
             int index = getNearestServerIndex(hash);
             int hashOfNode = hashOfServers.get(index);
             return hashToNodeMap.get(hashOfNode);
         } finally {
-            readLock.unlock();
+            // readLock.unlock();
         }
     }
 
